@@ -26,7 +26,7 @@ def get_logger() -> logging.Logger:
     logger.propagate = False
 
     handler = logging.StreamHandler()
-    handler.setFormatter(RedactingFormatter(List(PII_FIELDS)))
+    handler.setFormatter(RedactingFormatter(list(PII_FIELDS)))
 
     logger.addHandler(handler)
 
@@ -48,6 +48,25 @@ def get_db() -> mysql.connector.connection.MySQLConnection:
     return conn
 
 
+def main():
+    """Connects to a secure db, retrieves all rows in the users tables and
+    displays filtered data"""
+    db = get_db()
+    cursor = db.cursor()
+    cursor.execute("SELECT * FROM users;")
+    fields = [i[0] for i in cursor.description]
+
+    logger = get_logger()
+
+    for row in cursor:
+        filtered_row = [filter_datum([field], '***', str(value), ';') for field, value in zip(fields, row)]
+        str_row = ''.join(f'{f}={r}; ' for r, f in zip(filtered_row, fields))
+        logger.info(str_row.strip())
+
+    cursor.close()
+    db.close()
+
+
 class RedactingFormatter(logging.Formatter):
     """ Redacting Formatter class
         """
@@ -66,3 +85,7 @@ class RedactingFormatter(logging.Formatter):
                                   record.getMessage(), self.SEPARATOR)
 
         return super(RedactingFormatter, self).format(record)
+
+
+if __name__ == '__main__':
+    main()
