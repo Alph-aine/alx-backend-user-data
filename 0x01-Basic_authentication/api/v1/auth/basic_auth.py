@@ -8,4 +8,5 @@ from models.user import User
 
 
 class BasicAuth(Auth):
+    '''Basic Authentication class'''
     pass
