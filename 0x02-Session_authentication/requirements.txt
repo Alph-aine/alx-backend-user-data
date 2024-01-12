@@ -1,0 +1,8 @@
+Flask==1.1.2
+Flask-Cors==3.0.8
+Jinja2==2.10.1
+requests==2.18.4
+pycodestyle==2.6.0
+Werkzeug==2.0.0
+MarkupSafe==2.0.0
+itsdangerous==2.0.0
